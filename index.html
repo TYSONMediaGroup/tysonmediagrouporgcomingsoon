@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TYSON</title>
+    <title>Tyson Media Group</title>
     <style>
+        /* Base Reset and Full Height Setup */
         * {
             margin: 0;
             padding: 0;
@@ -14,74 +15,68 @@
         html, body {
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            overflow: hidden; /* Prevent scrolling during transition */
             background-color: #000;
             font-family: sans-serif;
+            cursor: pointer; /* Feedback that the whole page is clickable */
         }
 
-        /* Splash / Enter Screen Overlay */
-        .splash-screen {
+        /* Splash Screen (Image Overlay) */
+        #splash {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            z-index: 100;
             background-color: #000;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 100;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 1.5s ease-out, visibility 1.5s ease-out; /* Slow, elegant fade */
         }
 
-        /* Elegant Enter Button */
-        .enter-btn {
-            background: transparent;
-            border: 2px solid rgba(255, 255, 255, 0.7);
-            color: #fff;
-            padding: 15px 40px;
-            font-size: 18px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        /* The photograph inside the splash screen */
+        .splash-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Mirror the video's scaling behavior (2560x1440) */
         }
 
-        .enter-btn:hover {
-            background: #fff;
-            color: #000;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-        }
-
-        /* Hiding class for splash screen */
-        .splash-screen.fade-out {
+        /* Splash Screen Fade-out class */
+        #splash.fade-out {
             opacity: 0;
             visibility: hidden;
         }
 
-        /* Full screen video container */
-        .video-container {
+        /* Video Container (The core experience) */
+        #video-container {
             position: relative;
             width: 100%;
             height: 100%;
+            z-index: 1; /* Sits below the splash screen initially */
+            opacity: 0; /* Starts hidden, then fades in *after* the splash fades out */
+            transition: opacity 0.8s ease-in;
         }
 
-        video {
+        /* The Main Video */
+        #bg-video {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* Full height on mobile/desktop, cropping sides if needed */
         }
 
-        /* Subtle Mute/Unmute Button in the corner just in case */
+        /* Subtle Mute/Unmute Button (Top Right) */
         .mute-btn {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.7);
-            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 14px;
             border-radius: 20px;
             cursor: pointer;
             font-size: 14px;
@@ -90,22 +85,22 @@
             z-index: 10;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .mute-btn:hover {
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             color: #fff;
         }
     </style>
 </head>
-<body>
+<body id="page-body">
 
-    <div id="splash" class="splash-screen">
-        <button id="enter-btn" class="enter-btn">Enter Experience</button>
+    <div id="splash">
+        <img src="photograph.jpg" alt="Intro Photograph" class="splash-image">
     </div>
 
-    <div class="video-container">
+    <div id="video-container">
         <video id="bg-video" loop playsinline>
             <source src="video.mp4" type="video/mp4">
             Your browser does not support the video tag.
@@ -118,23 +113,30 @@
 
     <script>
         const splash = document.getElementById('splash');
-        const enterBtn = document.getElementById('enter-btn');
         const video = document.getElementById('bg-video');
+        const videoContainer = document.getElementById('video-container');
         const muteBtn = document.getElementById('mute-btn');
         const muteIcon = document.getElementById('mute-icon');
         const muteText = document.getElementById('mute-text');
 
-        // When user clicks Enter
-        enterBtn.addEventListener('click', () => {
-            // Fade out the splash screen
-            splash.classList.add('fade-out');
-            
-            // Start the video with sound active!
-            video.muted = false;
-            video.play();
-        });
+        // Capture a click ANYWHERE on the body to trigger the experience
+        document.body.addEventListener('click', startExperience, { once: true }); // Ensure it only fires once
 
-        // Keep the manual mute toggle just in case they want to silence it later
+        function startExperience() {
+            // 1. Slow, elegant fade out of the splash image
+            splash.classList.add('fade-out');
+
+            // 2. We start the video instantly (since the user interacted, audio is now allowed)
+            video.muted = false; // We start it loud as requested
+            video.play();
+
+            // 3. Optional subtle fade-in of the video container for extra smoothness
+            setTimeout(() => {
+                videoContainer.style.opacity = 1;
+            }, 750); // Start fading in the video halfway through the splash fade
+        }
+
+        // Manual Mute/Unmute toggle (keep it subtle)
         muteBtn.addEventListener('click', () => {
             if (video.muted) {
                 video.muted = false;
