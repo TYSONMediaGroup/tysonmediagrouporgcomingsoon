@@ -15,10 +15,10 @@
         html, body {
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Prevent scrolling during transition */
+            overflow: hidden; 
             background-color: #000;
             font-family: sans-serif;
-            cursor: pointer; /* Feedback that the whole page is clickable */
+            cursor: pointer; 
         }
 
         /* Splash Screen (Image Overlay) */
@@ -35,62 +35,60 @@
             align-items: center;
             opacity: 1;
             visibility: visible;
-            transition: opacity 1.5s ease-out, visibility 1.5s ease-out; /* Slow, elegant fade */
+            transition: opacity 1.5s ease-out, visibility 1.5s ease-out; 
         }
 
-        /* The photograph inside the splash screen */
         .splash-image {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Mirror the video's scaling behavior (2560x1440) */
+            object-fit: cover; 
         }
 
-        /* Splash Screen Fade-out class */
         #splash.fade-out {
             opacity: 0;
             visibility: hidden;
         }
 
-        /* Video Container (The core experience) */
+        /* Video Container */
         #video-container {
             position: relative;
             width: 100%;
             height: 100%;
-            z-index: 1; /* Sits below the splash screen initially */
-            opacity: 0; /* Starts hidden, then fades in *after* the splash fades out */
+            z-index: 1; 
+            opacity: 0; 
             transition: opacity 0.8s ease-in;
         }
 
-        /* The Main Video */
         #bg-video {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Full height on mobile/desktop, cropping sides if needed */
+            object-fit: cover; 
         }
 
-        /* Subtle Mute/Unmute Button (Top Right) */
+        /* ULTRA-MINIMAL MUTE BUTTON */
         .mute-btn {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: rgba(255, 255, 255, 0.8);
-            padding: 8px 14px;
-            border-radius: 20px;
+            top: 25px;
+            right: 25px;
+            background: transparent; /* No blocky background color */
+            border: none;             /* No borders */
+            color: rgba(255, 255, 255, 0.35); /* Super faint, blends into the video */
+            font-size: 20px;          /* Clean sizing */
             cursor: pointer;
-            font-size: 14px;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
+            transition: color 0.3s ease, transform 0.2s ease;
             z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            padding: 10px;            /* Keeps hit box easy to tap but invisible */
+            outline: none;
+            user-select: none;
         }
 
+        /* Only lights up slightly on hover so it stays invisible until looked for */
         .mute-btn:hover {
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .mute-btn:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -106,8 +104,8 @@
             Your browser does not support the video tag.
         </video>
 
-        <button id="mute-btn" class="mute-btn">
-            <span id="mute-icon">🔊</span> <span id="mute-text">Mute</span>
+        <button id="mute-btn" class="mute-btn" aria-label="Toggle Sound">
+            <span id="mute-icon">🔊</span>
         </button>
     </div>
 
@@ -117,35 +115,33 @@
         const videoContainer = document.getElementById('video-container');
         const muteBtn = document.getElementById('mute-btn');
         const muteIcon = document.getElementById('mute-icon');
-        const muteText = document.getElementById('mute-text');
 
-        // Capture a click ANYWHERE on the body to trigger the experience
-        document.body.addEventListener('click', startExperience, { once: true }); // Ensure it only fires once
+        // Body tap starts the experience
+        document.body.addEventListener('click', startExperience, { once: true }); 
 
-        function startExperience() {
-            // 1. Slow, elegant fade out of the splash image
+        function startExperience(e) {
+            // Prevent the initial full-screen click from instantly toggling the mute button if they clicked near the top right
+            if (e.target.closest('#mute-btn')) return;
+
             splash.classList.add('fade-out');
-
-            // 2. We start the video instantly (since the user interacted, audio is now allowed)
-            video.muted = false; // We start it loud as requested
+            video.muted = false; 
             video.play();
 
-            // 3. Optional subtle fade-in of the video container for extra smoothness
             setTimeout(() => {
                 videoContainer.style.opacity = 1;
-            }, 750); // Start fading in the video halfway through the splash fade
+            }, 750); 
         }
 
-        // Manual Mute/Unmute toggle (keep it subtle)
-        muteBtn.addEventListener('click', () => {
+        // Isolated toggle button
+        muteBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Stops click from triggering the main body logic
+            
             if (video.muted) {
                 video.muted = false;
                 muteIcon.textContent = '🔊';
-                muteText.textContent = 'Mute';
             } else {
                 video.muted = true;
                 muteIcon.textContent = '🔇';
-                muteText.textContent = 'Unmute';
             }
         });
     </script>
