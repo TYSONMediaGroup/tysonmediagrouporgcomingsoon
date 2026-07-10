@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tyson Media Group - Animation</title>
+    <title>TYSON</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,60 +19,42 @@
         body, html {
             width: 100%;
             height: 100vh;
-            background-color: #05010a; /* Deep dark background to make the glow pop */
+            background-color: #05010a;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
         }
 
-        .animation-wrapper {
-            position: relative;
+        .svg-container {
             width: 100vw;
             height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        /* --- STAGE 1: THE TRACE EFFECT --- */
-        .trace-svg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .trace-text {
+        /* Shared font styles for both SVG text elements */
+        .svg-text {
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
             font-weight: 600;
             font-size: 6.5rem;
+        }
+
+        /* --- STAGE 1: THE TRACE EFFECT --- */
+        .trace-text {
             fill: transparent;
             stroke: rgba(255, 255, 255, 0.9);
             stroke-width: 1.5px;
-            
-            /* Dash setup for drawing the lines */
             stroke-dasharray: 1200;
             stroke-dashoffset: 1200;
-            
-            /* 6-second total loop */
             animation: traceLine 6s ease-in-out infinite;
         }
 
         /* --- STAGE 2: THE GLOWING CROSS-FADE --- */
         .glow-text {
-            position: absolute;
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-            font-weight: 600;
-            font-size: 6.5rem;
-            color: #ffffff;
-            z-index: 2;
+            fill: #ffffff;
             opacity: 0;
-            white-space: nowrap;
             
-            /* Powerful Synthwave Glow */
+            /* CSS text-shadow works beautifully on SVG text in modern browsers */
             text-shadow: 
                 0 0 10px #ffffff,
                 0 0 20px #e2b4ff,
@@ -80,79 +62,37 @@
                 0 0 80px #a855f7,
                 0 0 120px #7e22ce;
                 
-            /* 6-second total loop */
+            transform-origin: center;
             animation: glowBlast 6s ease-in-out infinite;
         }
 
-        /* --- KEYFRAMES --- */
-
-        /* Animates the stroke offset to simulate writing/tracing */
         @keyframes traceLine {
-            0% {
-                stroke-dashoffset: 1200;
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            45% {
-                stroke-dashoffset: 0;
-                opacity: 1;
-                stroke: rgba(255, 255, 255, 0.9);
-            }
-            55% {
-                opacity: 0; /* Fades out as the glow takes over */
-            }
-            100% {
-                stroke-dashoffset: 0;
-                opacity: 0;
-            }
+            0% { stroke-dashoffset: 1200; opacity: 0; }
+            10% { opacity: 1; }
+            45% { stroke-dashoffset: 0; opacity: 1; stroke: rgba(255, 255, 255, 0.9); }
+            55% { opacity: 0; }
+            100% { stroke-dashoffset: 0; opacity: 0; }
         }
 
-        /* Handles the fade-in, the power blast, and the fade-out */
         @keyframes glowBlast {
-            0%, 35% {
-                opacity: 0;
-                filter: blur(10px) brightness(0.5);
-                transform: scale(0.98);
-            }
-            48% {
-                /* The "Pop" */
-                opacity: 1;
-                filter: blur(2px) brightness(1.5);
-                transform: scale(1.02);
-            }
-            55%, 80% {
-                /* Resting state */
-                opacity: 1;
-                filter: blur(0px) brightness(1);
-                transform: scale(1);
-            }
-            100% {
-                /* Dissolve */
-                opacity: 0;
-                filter: blur(20px) brightness(0);
-                transform: scale(1.05);
-            }
+            0%, 35% { opacity: 0; filter: blur(10px) brightness(0.5); transform: scale(0.98); }
+            48% { opacity: 1; filter: blur(2px) brightness(1.5); transform: scale(1.02); }
+            55%, 80% { opacity: 1; filter: blur(0px) brightness(1); transform: scale(1); }
+            100% { opacity: 0; filter: blur(20px) brightness(0); transform: scale(1.05); }
         }
 
-        /* Mobile scaling */
         @media (max-width: 900px) {
-            .trace-text, .glow-text {
-                font-size: 3.5rem;
-            }
+            .svg-text { font-size: 3.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="animation-wrapper">
-        <svg class="trace-svg" viewBox="0 0 1200 300">
-            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="trace-text">tysonmediagroup.org</text>
-        </svg>
+    <svg class="svg-container" viewBox="0 0 1200 300">
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="svg-text glow-text">tysonmediagroup.org</text>
         
-        <div class="glow-text">tysonmediagroup.org</div>
-    </div>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="svg-text trace-text">tysonmediagroup.org</text>
+    </svg>
 
 </body>
 </html>
