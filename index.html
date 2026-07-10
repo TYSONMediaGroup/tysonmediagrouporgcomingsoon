@@ -3,224 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tyson Media Group</title>
+    <title>TYSON Media Group | Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;700&display=swap" rel="stylesheet">
     <style>
+        /* Global Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
-        html, body {
+
+        body, html {
             width: 100%;
             height: 100%;
-            overflow: hidden; 
-            background-color: #000;
-            font-family: system-ui, -apple-system, sans-serif;
-            cursor: pointer; 
-        }
-
-        /* Splash Screen Layer */
-        #splash {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-            background-color: #000;
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.8s; 
-        }
-
-        .splash-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-        }
-
-        /* Subtle floating indicator for user interaction */
-        .enter-hint {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 13px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            pointer-events: none;
-            animation: pulseHint 3s infinite ease-in-out;
-        }
-
-        @keyframes pulseHint {
-            0%, 100% { opacity: 0.2; transform: translate(-50%, 0); }
-            50% { opacity: 0.7; transform: translate(-50%, -3px); }
-        }
-
-        #splash.fade-out {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        /* Main Media Container */
-        #video-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            z-index: 1; 
-            opacity: 0; 
-            transition: opacity 1.2s ease-in;
-        }
-
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-        }
-
-        /* ULTRA-MINIMALIST GEOMETRIC MUTE BUTTON lol*/
-        .mute-btn {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            background: transparent;
-            border: none;
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            z-index: 10;
-            opacity: 0.25;
-            transition: opacity 0.3s ease, transform 0.2s ease;
+            background-color: #030305;
+            font-family: 'Montserrat', sans-serif;
+            color: #ffffff;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .mute-btn:hover {
-            opacity: 0.8;
-        }
-
-        /* Pure CSS Speaker Graphic */
-        .speaker-icon {
-            position: relative;
-            width: 8px;
-            height: 10px;
-            background: #fff;
-            display: inline-block;
-        }
-        .speaker-icon::before {
-            content: '';
+        /* --- Ambient 3D Lighting (Shopify Editions Vibe) --- */
+        .ambient-light {
             position: absolute;
-            top: -4px;
-            left: 4px;
-            border-top: 9px solid transparent;
-            border-bottom: 9px solid transparent;
-            border-right: 10px solid #fff;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            z-index: 0;
+            animation: floatLight 10s infinite alternate ease-in-out;
         }
 
-        /* Dynamic Muted State Slash Layer */
-        .speaker-icon::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: -4px;
-            width: 22px;
-            height: 2px;
-            background: #fff;
-            transform: translateY(-50%) rotate(45deg);
-            transition: opacity 0.2s ease;
-            opacity: 0; /* Hidden when sound is playing */
+        .light-1 {
+            width: 40vw;
+            height: 40vw;
+            background: linear-gradient(135deg, #1a2a6c, #11998e);
+            top: -10%;
+            left: -10%;
         }
 
-        .is-muted .speaker-icon::after {
-            opacity: 1; /* Shows slash when muted */
+        .light-2 {
+            width: 30vw;
+            height: 30vw;
+            background: linear-gradient(135deg, #2b5876, #4e4376);
+            bottom: -5%;
+            right: -5%;
+            animation-duration: 14s;
+            animation-direction: alternate-reverse;
+        }
+
+        @keyframes floatLight {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10vw, 10vh) scale(1.2); }
+        }
+
+        /* --- 3D Scene Wrapper --- */
+        .scene {
+            perspective: 1200px; /* Creates the 3D space */
+            z-index: 1;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        /* --- Floating Glass Card --- */
+        .glass-card {
+            width: 100%;
+            padding: 60px 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            backdrop-filter: blur(24px); /* The frosted glass effect */
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            
+            /* 3D Properties */
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out; /* Smooth follow for the mouse */
+            
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Elements inside popping out on the Z-axis */
+        .logo-container {
+            transform: translateZ(80px); /* Pops the logo out */
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+        }
+
+        h2 {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            font-weight: 200;
+            letter-spacing: 8px;
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            transform: translateZ(50px); /* Pops text out slightly less */
+        }
+
+        /* Brand Branches */
+        .branches {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            letter-spacing: 3px;
+            color: #888;
+            transform: translateZ(60px);
+            margin-bottom: 50px;
+        }
+
+        .branch {
+            transition: all 0.3s ease;
+        }
+
+        .branch:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .separator {
+            color: #444;
+            user-select: none;
+        }
+
+        /* Interactive Button */
+        .notify-btn {
+            padding: 16px 45px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: translateZ(70px); /* Button pops out */
+            backdrop-filter: blur(10px);
+        }
+
+        .notify-btn:hover {
+            background: #ffffff;
+            color: #030305;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+            border-color: #ffffff;
+            transform: translateZ(90px) scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            .branches {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .separator {
+                display: none;
+            }
+            .glass-card {
+                padding: 40px 20px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
-    <div id="splash">
-        <img src="photograph.jpg" alt="Intro" class="splash-image">
-        <div class="enter-hint">[ Click Anywhere to Enter ]</div>
-    </div>
+    <!-- Deep Ambient 3D Lights -->
+    <div class="ambient-light light-1"></div>
+    <div class="ambient-light light-2"></div>
 
-    <!-- Video & Separate Audio System -->
-    <div id="video-container">
-        <!-- Video stays locked to muted tracking -->
-        <video id="bg-video" loop playsinline muted>
-            <source src="video.mp4" type="video/mp4">
-        </video>
+    <!-- 3D Scene & Interative Card -->
+    <div class="scene">
+        <div class="glass-card" id="tilt-card">
+            
+            <div class="logo-container">
+                <img src="https://raw.githubusercontent.com/TYSONMediaGroup/TYSONMediaGroup/refs/heads/main/imagestuff/TYSONMediaGroupBanner.png" alt="TYSON Media Group Banner">
+            </div>
+            
+            <h2>INITIATING SEQUENCE</h2>
+            
+            <div class="branches">
+                <span class="branch">MEDIA</span>
+                <span class="separator">•</span>
+                <span class="branch">AVIATION</span>
+                <span class="separator">•</span>
+                <span class="branch">ATLANTIS</span>
+            </div>
 
-        <!-- Dynamic Audio Object -->
-        <audio id="bg-audio" loop></audio>
-
-        <!-- Elegant Slash Mute Toggle -->
-        <button id="mute-btn" class="mute-btn" aria-label="Mute Control">
-            <span id="speaker-graphic" class="speaker-icon"></span>
-        </button>
+            <button class="notify-btn" onclick="engage()">ESTABLISH LINK</button>
+            
+        </div>
     </div>
 
     <script>
-        // Exact tracks from the songs folder
-        const playlist = [
-            "audio/Upon Viridian Waterways.mp3",
-            "audio/Cascade.mp3",
-            "audio/Brothertiger - Wallow (Official Video).mp3",
-            "audio/Sunset District.mp3",
-            "audio/Tide Pool.mp3",
-            "audio/Westerlies.mp3",
-            "audio/Tradewinds.mp3",
-            "audio/Tropic of Cancer.mp3",
-            "audio/Pelée.mp3",
-            "audio/Brothertiger - Paradise Lost (Official Audi....mp3" 
-        ];
+        // --- 3D Tilt Logic ---
+        const card = document.getElementById('tilt-card');
+        const scene = document.querySelector('.scene');
 
-        const splash = document.getElementById('splash');
-        const video = document.getElementById('bg-video');
-        const audio = document.getElementById('bg-audio');
-        const videoContainer = document.getElementById('video-container');
-        const muteBtn = document.getElementById('mute-btn');
-        const speakerGraphic = document.getElementById('speaker-graphic');
+        // Max rotation in degrees
+        const maxTilt = 15;
 
-        // Pick a track right away on load
-        function initAudio() {
-            const randomTrack = playlist[Math.floor(Math.random() * playlist.length)];
-            audio.src = encodeURI(randomTrack);
-        }
-        initAudio();
-
-        // Single click transition sequence
-        document.body.addEventListener('click', (e) => {
-            if (e.target.closest('#mute-btn')) return;
-
-            splash.classList.add('fade-out');
+        scene.addEventListener('mousemove', (e) => {
+            // Get dimensions of the container
+            const rect = scene.getBoundingClientRect();
             
-            // Fire video and audio independently
-            video.play();
-            audio.muted = false;
-            audio.play();
-
-            setTimeout(() => {
-                videoContainer.style.opacity = 1;
-            }, 600); 
-        }, { once: true });
-
-        // Toggle Audio Element Only
-        muteBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+            // Calculate mouse position relative to the center of the card
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
             
-            if (audio.muted) {
-                audio.muted = false;
-                muteBtn.classList.remove('is-muted');
-            } else {
-                audio.muted = true;
-                muteBtn.classList.add('is-muted');
-            }
+            // Calculate rotation percentages
+            const rotateX = -(y / (rect.height / 2)) * maxTilt;
+            const rotateY = (x / (rect.width / 2)) * maxTilt;
+
+            // Apply the 3D transform
+            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         });
-    </script>
 
+        // Snap back to original position when mouse leaves
+        scene.addEventListener('mouseleave', () => {
+            card.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)'; // Add springy transition back
+            card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            
+            // Remove transition so it tracks smoothly when hovered again
+            setTimeout(() => {
+                card.style.transition = 'transform 0.1s ease-out';
+            }, 600);
+        });
+
+        // Simple Button interaction
+        function engage() {
+            const btn = document.querySelector('.notify-btn');
+            btn.innerText = "LINK SECURED";
+            btn.style.background = "#ffffff";
+            btn.style.color = "#030305";
+            
+            setTimeout(() => {
+                btn.innerText = "ESTABLISH LINK";
+                btn.style.background = "rgba(255, 255, 255, 0.05)";
+                btn.style.color = "#ffffff";
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
