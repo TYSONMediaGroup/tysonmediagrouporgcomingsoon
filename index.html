@@ -3,80 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tysonmediagroup.org</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+    <title>Tyson Media Group - Animation</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body, html {
-            width: 100%; height: 100%;
-            background-color: #000000;
+            width: 100%;
+            height: 100vh;
+            background-color: #05010a; /* Deep dark background to make the glow pop */
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             overflow: hidden;
         }
 
-        .brand-container {
+        .animation-wrapper {
             position: relative;
+            width: 100vw;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- STAGE 1: THE TRACE EFFECT --- */
+        .trace-svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             z-index: 1;
-            /* This makes the text feel 'solid' but 'lit' */
+        }
+
+        .trace-text {
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
-            font-weight: 300;
-            font-size: 8rem; /* Large scale for impact */
-            letter-spacing: 2px;
-            color: #ffffff;
+            font-weight: 600;
+            font-size: 6.5rem;
+            fill: transparent;
+            stroke: rgba(255, 255, 255, 0.9);
+            stroke-width: 1.5px;
             
-            /* The Multi-Layer Bloom Effect */
-            text-shadow: 
-                0 0 5px rgba(255, 255, 255, 1),    /* Sharp core */
-                0 0 15px rgba(255, 255, 255, 0.8),  /* Inner glow */
-                0 0 30px rgba(255, 255, 255, 0.6),  /* Mid glow */
-                0 0 60px rgba(255, 255, 255, 0.4),  /* Outer bloom */
-                0 0 120px rgba(255, 255, 255, 0.2); /* Deep ambient light */
+            /* Dash setup for drawing the lines */
+            stroke-dasharray: 1200;
+            stroke-dashoffset: 1200;
             
-            opacity: 0;
-            transform: scale(0.95);
-            transition: all 4s cubic-bezier(0.16, 1, 0.3, 1);
+            /* 6-second total loop */
+            animation: traceLine 6s ease-in-out infinite;
         }
 
-        .brand-container.active {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* Subtle background pulse to make the scene feel 'alive' */
-        .ambient-bloom {
+        /* --- STAGE 2: THE GLOWING CROSS-FADE --- */
+        .glow-text {
             position: absolute;
-            width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 600;
+            font-size: 6.5rem;
+            color: #ffffff;
+            z-index: 2;
             opacity: 0;
-            transition: opacity 4s ease;
+            white-space: nowrap;
+            
+            /* Powerful Synthwave Glow */
+            text-shadow: 
+                0 0 10px #ffffff,
+                0 0 20px #e2b4ff,
+                0 0 40px #a855f7,
+                0 0 80px #a855f7,
+                0 0 120px #7e22ce;
+                
+            /* 6-second total loop */
+            animation: glowBlast 6s ease-in-out infinite;
         }
 
-        .ambient-bloom.active { opacity: 1; }
+        /* --- KEYFRAMES --- */
 
-        @media (max-width: 900px) { .brand-container { font-size: 4rem; } }
+        /* Animates the stroke offset to simulate writing/tracing */
+        @keyframes traceLine {
+            0% {
+                stroke-dashoffset: 1200;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            45% {
+                stroke-dashoffset: 0;
+                opacity: 1;
+                stroke: rgba(255, 255, 255, 0.9);
+            }
+            55% {
+                opacity: 0; /* Fades out as the glow takes over */
+            }
+            100% {
+                stroke-dashoffset: 0;
+                opacity: 0;
+            }
+        }
+
+        /* Handles the fade-in, the power blast, and the fade-out */
+        @keyframes glowBlast {
+            0%, 35% {
+                opacity: 0;
+                filter: blur(10px) brightness(0.5);
+                transform: scale(0.98);
+            }
+            48% {
+                /* The "Pop" */
+                opacity: 1;
+                filter: blur(2px) brightness(1.5);
+                transform: scale(1.02);
+            }
+            55%, 80% {
+                /* Resting state */
+                opacity: 1;
+                filter: blur(0px) brightness(1);
+                transform: scale(1);
+            }
+            100% {
+                /* Dissolve */
+                opacity: 0;
+                filter: blur(20px) brightness(0);
+                transform: scale(1.05);
+            }
+        }
+
+        /* Mobile scaling */
+        @media (max-width: 900px) {
+            .trace-text, .glow-text {
+                font-size: 3.5rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="ambient-bloom" id="ambient"></div>
-    
-    <div class="brand-container" id="brand">
-        tysonmediagroup.org
+    <div class="animation-wrapper">
+        <svg class="trace-svg" viewBox="0 0 1200 300">
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="trace-text">tysonmediagroup.org</text>
+        </svg>
+        
+        <div class="glow-text">tysonmediagroup.org</div>
     </div>
 
-    <script>
-        window.addEventListener('load', () => {
-            // Trigger the transition after a brief pause for a 'fade-in' feel
-            setTimeout(() => {
-                document.getElementById('brand').classList.add('active');
-                document.getElementById('ambient').classList.add('active');
-            }, 300);
-        });
-    </script>
 </body>
 </html>
