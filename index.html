@@ -6,7 +6,7 @@
     <title>TYSON Media Group | Coming Soon</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -22,7 +22,6 @@
             font-family: 'Cormorant Garamond', serif;
             overflow: hidden;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
@@ -42,50 +41,35 @@
             opacity: 1;
         }
 
-        /* Container for the logo and text */
+        /* Container for the logo */
         .brand-container {
             position: relative;
             z-index: 1;
             text-align: center;
-            width: 100%;
-            max-width: 800px;
+            width: 90%;
+            max-width: 1200px; /* Widened to accommodate the URL */
         }
 
         /* SVG used to draw the text outline */
         .svg-logo {
             width: 100%;
             height: auto;
-            max-height: 200px;
+            max-height: 250px;
             overflow: visible;
         }
 
         .svg-text {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 140px;
-            font-weight: 400;
-            letter-spacing: 15px;
+            font-style: italic; /* Forces the premium italic lean */
+            font-size: 100px;
+            font-weight: 300;
+            letter-spacing: 4px; /* Tighter tracking for a URL */
             fill: transparent;
             stroke: rgba(255, 255, 255, 0.4);
             stroke-width: 1px;
-            stroke-dasharray: 1200;
-            stroke-dashoffset: 1200;
-        }
-
-        /* The bottom text that fades in */
-        .sub-brand {
-            font-size: 1.2rem;
-            letter-spacing: 12px;
-            text-transform: uppercase;
-            color: #a3a3a3;
-            margin-top: -20px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 1.5s ease-out;
-        }
-
-        .sub-brand.ignite {
-            opacity: 1;
-            transform: translateY(0);
+            /* Higher values required to wrap the longer string of text */
+            stroke-dasharray: 2500;
+            stroke-dashoffset: 2500;
         }
 
         /* --- Animations --- */
@@ -113,27 +97,34 @@
             animation: bulbIgnition 1s ease-in-out forwards;
         }
 
+        /* Mobile adjustments for the long URL */
+        @media (max-width: 800px) {
+            .svg-text {
+                font-size: 70px;
+            }
+        }
+        
+        @media (max-width: 500px) {
+            .svg-text {
+                font-size: 45px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- The background that reveals on ignition -->
     <div class="cinematic-bg" id="background"></div>
 
     <div class="brand-container">
-        <!-- SVG used to animate the text outline -->
-        <svg class="svg-logo" viewBox="0 0 800 200">
-            <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" class="svg-text" id="tyson-text">TYSON</text>
+        <svg class="svg-logo" viewBox="0 0 1000 200">
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="svg-text" id="tyson-text">tysonmediagroup.org</text>
         </svg>
-        
-        <div class="sub-brand" id="sub-text">MEDIA GROUP</div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const tysonText = document.getElementById('tyson-text');
             const bg = document.getElementById('background');
-            const subText = document.getElementById('sub-text');
 
             // Step 1: Start the drawing sequence
             tysonText.classList.add('draw-active');
@@ -142,8 +133,7 @@
             setTimeout(() => {
                 tysonText.classList.add('ignite-active');
                 bg.classList.add('ignite');
-                subText.classList.add('ignite');
-            }, 3000); // 3000ms syncs perfectly with the 3.5s draw animation
+            }, 3000); 
         });
     </script>
 
