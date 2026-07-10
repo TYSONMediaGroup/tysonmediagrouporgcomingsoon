@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tysonmediagroup.org</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
     
     <style>
@@ -13,76 +11,71 @@
 
         body, html {
             width: 100%; height: 100%;
-            background-color: #020202;
-            font-family: 'Cormorant Garamond', serif;
-            overflow: hidden;
+            background-color: #000000;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
-
-        /* Cinematic Background Glow */
-        .glow-field {
-            position: absolute;
-            width: 800px;
-            height: 400px;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%);
-            opacity: 0;
-            transition: opacity 3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            z-index: 0;
-        }
-
-        .glow-field.active { opacity: 1; }
 
         .brand-container {
             position: relative;
             z-index: 1;
-            width: 90%;
-            max-width: 1000px;
-        }
-
-        .svg-text {
+            /* This makes the text feel 'solid' but 'lit' */
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
-            font-size: 100px;
-            fill: rgba(255, 255, 255, 0.05); /* Starts very subtle */
-            stroke: rgba(255, 255, 255, 0.2);
-            stroke-width: 0.5px;
-            transition: all 4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            font-weight: 300;
+            font-size: 8rem; /* Large scale for impact */
+            letter-spacing: 2px;
+            color: #ffffff;
+            
+            /* The Multi-Layer Bloom Effect */
+            text-shadow: 
+                0 0 5px rgba(255, 255, 255, 1),    /* Sharp core */
+                0 0 15px rgba(255, 255, 255, 0.8),  /* Inner glow */
+                0 0 30px rgba(255, 255, 255, 0.6),  /* Mid glow */
+                0 0 60px rgba(255, 255, 255, 0.4),  /* Outer bloom */
+                0 0 120px rgba(255, 255, 255, 0.2); /* Deep ambient light */
+            
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* The "Powerful Glow" State */
-        .svg-text.active {
-            fill: rgba(255, 255, 255, 0.9);
-            stroke: rgba(255, 255, 255, 0.9);
-            filter: drop-shadow(0 0 20px rgba(255,255,255,0.4)) 
-                    drop-shadow(0 0 50px rgba(255,255,255,0.2));
-            stroke-width: 0px;
+        .brand-container.active {
+            opacity: 1;
+            transform: scale(1);
         }
 
-        @media (max-width: 800px) { .svg-text { font-size: 60px; } }
+        /* Subtle background pulse to make the scene feel 'alive' */
+        .ambient-bloom {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 4s ease;
+        }
+
+        .ambient-bloom.active { opacity: 1; }
+
+        @media (max-width: 900px) { .brand-container { font-size: 4rem; } }
     </style>
 </head>
 <body>
 
-    <div class="glow-field" id="glow"></div>
-
-    <div class="brand-container">
-        <svg viewBox="0 0 1000 200">
-            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="svg-text" id="brand-text">tysonmediagroup.org</text>
-        </svg>
+    <div class="ambient-bloom" id="ambient"></div>
+    
+    <div class="brand-container" id="brand">
+        tysonmediagroup.org
     </div>
 
     <script>
         window.addEventListener('load', () => {
-            const text = document.getElementById('brand-text');
-            const glow = document.getElementById('glow');
-
-            // Trigger the cinematic glow sequence
+            // Trigger the transition after a brief pause for a 'fade-in' feel
             setTimeout(() => {
-                text.classList.add('active');
-                glow.classList.add('active');
-            }, 500); // Slight delay for dramatic effect
+                document.getElementById('brand').classList.add('active');
+                document.getElementById('ambient').classList.add('active');
+            }, 300);
         });
     </script>
 </body>
