@@ -3,219 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tysonmediagroup.org | Coming Soon</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
-    <!-- Load Matter.js Physics Engine -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body, html {
-            width: 100%;
-            height: 100%;
-            background-color: #050505;
-            font-family: 'Cormorant Garamond', serif;
-            overflow: hidden;
-            user-select: none; /* Prevents text highlighting when dragging */
-        }
-
-        /* Ambient Background */
-        .ambient {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 15vw;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.02);
-            z-index: 0;
-            pointer-events: none;
-            letter-spacing: 20px;
-        }
-
-        /* Physics Elements (The Glass Blocks) */
-        .physics-el {
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            color: #fff;
-            font-size: 1.2rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            border-radius: 50px;
-            cursor: grab;
-            z-index: 10;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            /* Will-change optimizes hardware acceleration for moving parts */
-            will-change: transform; 
-        }
-
-        .physics-el:active {
-            cursor: grabbing;
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1);
-        }
-
-        /* Specific Element Sizing */
-        #logo-block {
-            width: 300px;
-            height: 80px;
-            border-radius: 10px;
-            padding: 10px;
-        }
-        
-        #logo-block img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            pointer-events: none;
-        }
-
-        #media-block, #aviation-block, #atlantis-block {
-            width: 180px;
-            height: 60px;
-        }
-
-        .instruction {
-            position: absolute;
-            bottom: 30px;
-            width: 100%;
-            text-align: center;
-            color: #555;
-            font-style: italic;
-            letter-spacing: 2px;
-            pointer-events: none;
-            z-index: 0;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="ambient">TYSON</div>
-    <div class="instruction">Click and drag to interact</div>
-
-    <!-- DOM Elements to be synced with Physics Bodies -->
-    <div id="logo-block" class="physics-el">
-        <img src="https://raw.githubusercontent.com/TYSONMediaGroup/TYSONMediaGroup/refs/heads/main/imagestuff/TYSONMediaGroupBanner.png" alt="Logo">
-    </div>
-    <div id="media-block" class="physics-el">Media</div>
-    <div id="aviation-block" class="physics-el">Aviation</div>
-    <div id="atlantis-block" class="physics-el">Atlantis</div>
-
-    <script>
-        // --- 1. Matter.js Setup ---
-        const Engine = Matter.Engine,
-              Render = Matter.Render,
-              Runner = Matter.Runner,
-              Bodies = Matter.Bodies,
-              Composite = Matter.Composite,
-              Mouse = Matter.Mouse,
-              MouseConstraint = Matter.MouseConstraint;
-
-        const engine = Engine.create();
-        const world = engine.world;
-        
-        // Slightly lower gravity for a more cinematic, floaty feel
-        engine.world.gravity.y = 0.6; 
-
-        // --- 2. Screen Boundaries ---
-        let width = window.innerWidth;
-        let height = window.innerHeight;
-        const wallOptions = { isStatic: true, render: { visible: false } };
-        
-        const ground = Bodies.rectangle(width / 2, height + 50, width * 2, 100, wallOptions);
-        const leftWall = Bodies.rectangle(-50, height / 2, 100, height * 2, wallOptions);
-        const rightWall = Bodies.rectangle(width + 50, height / 2, 100, height * 2, wallOptions);
-        const ceiling = Bodies.rectangle(width / 2, -50, width * 2, 100, wallOptions);
-        
-        Composite.add(world, [ground, leftWall, rightWall, ceiling]);
-
-        // --- 3. Create Physics Bodies ---
-        // Physics properties: restitution makes them bouncy, frictionAir gives them drag
-        const physicsProps = { restitution: 0.6, frictionAir: 0.02, friction: 0.1 };
-
-        // Dimensions map to the CSS width/height
-        const logoBody = Bodies.rectangle(width/2, 100, 300, 80, { ...physicsProps, chamfer: { radius: 10 } });
-        const mediaBody = Bodies.rectangle(width/2 - 100, 200, 180, 60, { ...physicsProps, chamfer: { radius: 30 } });
-        const aviationBody = Bodies.rectangle(width/2, 250, 180, 60, { ...physicsProps, chamfer: { radius: 30 } });
-        const atlantisBody = Bodies.rectangle(width/2 + 100, 150, 180, 60, { ...physicsProps, chamfer: { radius: 30 } });
-
-        Composite.add(world, [logoBody, mediaBody, aviationBody, atlantisBody]);
-
-        // Map DOM elements to their respective physics bodies
-        const elementsMap = [
-            { dom: document.getElementById('logo-block'), body: logoBody, w: 300, h: 80 },
-            { dom: document.getElementById('media-block'), body: mediaBody, w: 180, h: 60 },
-            { dom: document.getElementById('aviation-block'), body: aviationBody, w: 180, h: 60 },
-            { dom: document.getElementById('atlantis-block'), body: atlantisBody, w: 180, h: 60 }
-        ];
-
-        // --- 4. Mouse Interaction ---
-        const mouse = Mouse.create(document.body);
-        const mouseConstraint = MouseConstraint.create(engine, {
-            mouse: mouse,
-            constraint: {
-                stiffness: 0.2,
-                render: { visible: false }
-            }
-        });
-        Composite.add(world, mouseConstraint);
-
-        // --- 5. The Sync Loop ---
-        // This function continuously updates the CSS transforms to match the Matter.js coordinates
-        function syncDOM() {
-            elementsMap.forEach(el => {
-                const x = el.body.position.x - (el.w / 2);
-                const y = el.body.position.y - (el.h / 2);
-                const angle = el.body.angle;
-                
-                el.dom.style.transform = `translate(${x}px, ${y}px) rotate(${angle}rad)`;
-            });
-            requestAnimationFrame(syncDOM);
-        }
-
-        // --- 6. Run the Engine ---
-        Runner.run(Runner.create(), engine);
-        syncDOM();
-
-        // --- 7. Handle Window Resize ---
-        window.addEventListener('resize', () => {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            
-            // Move walls to new boundaries
-            Matter.Body.setPosition(ground, { x: width / 2, y: height + 50 });
-            Matter.Body.setPosition(rightWall, { x: width + 50, y: height / 2 });
-            Matter.Body.setPosition(ceiling, { x: width / 2, y: -50 });
-        });
-
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TYSON Media Group | Coming Soon</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
-    <!-- Load Matter.js Physics Engine -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
     <style>
         * {
             margin: 0;
@@ -226,190 +18,134 @@
         body, html {
             width: 100%;
             height: 100%;
-            background-color: #050505;
+            background-color: #020202; /* Pitch black for the draw-in phase */
             font-family: 'Cormorant Garamond', serif;
             overflow: hidden;
-            user-select: none; /* Prevents text highlighting when dragging */
-        }
-
-        /* Ambient Background */
-        .ambient {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 15vw;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.02);
-            z-index: 0;
-            pointer-events: none;
-            letter-spacing: 20px;
-        }
-
-        /* Physics Elements (The Glass Blocks) */
-        .physics-el {
-            position: absolute;
-            top: 0;
-            left: 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            color: #fff;
-            font-size: 1.2rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            border-radius: 50px;
-            cursor: grab;
-            z-index: 10;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            /* Will-change optimizes hardware acceleration for moving parts */
-            will-change: transform; 
         }
 
-        .physics-el:active {
-            cursor: grabbing;
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1);
-        }
-
-        /* Specific Element Sizing */
-        #logo-block {
-            width: 300px;
-            height: 80px;
-            border-radius: 10px;
-            padding: 10px;
-        }
-        
-        #logo-block img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            pointer-events: none;
-        }
-
-        #media-block, #aviation-block, #atlantis-block {
-            width: 180px;
-            height: 60px;
-        }
-
-        .instruction {
+        /* The background that fades in after the flash */
+        .cinematic-bg {
             position: absolute;
-            bottom: 30px;
-            width: 100%;
-            text-align: center;
-            color: #555;
-            font-style: italic;
-            letter-spacing: 2px;
-            pointer-events: none;
+            inset: 0;
+            background: radial-gradient(circle at center, #1a202c 0%, #050505 80%);
+            opacity: 0;
             z-index: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease-out;
         }
+
+        .cinematic-bg.ignite {
+            opacity: 1;
+        }
+
+        /* Container for the logo and text */
+        .brand-container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* SVG used to draw the text outline */
+        .svg-logo {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+            overflow: visible;
+        }
+
+        .svg-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 140px;
+            font-weight: 400;
+            letter-spacing: 15px;
+            fill: transparent;
+            stroke: rgba(255, 255, 255, 0.4);
+            stroke-width: 1px;
+            stroke-dasharray: 1200;
+            stroke-dashoffset: 1200;
+        }
+
+        /* The bottom text that fades in */
+        .sub-brand {
+            font-size: 1.2rem;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            color: #a3a3a3;
+            margin-top: -20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1.5s ease-out;
+        }
+
+        .sub-brand.ignite {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Animations --- */
+
+        /* 1. Tracing the outline */
+        @keyframes drawOutline {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .draw-active {
+            animation: drawOutline 3.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+
+        /* 2. The bulb flicker and final glow */
+        @keyframes bulbIgnition {
+            0%   { fill: transparent; filter: drop-shadow(0 0 0px #fff); stroke: rgba(255, 255, 255, 0.4); stroke-width: 1px; }
+            50%  { fill: #fff; filter: drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px rgba(255,255,255,0.5)); stroke-width: 0; }
+            60%  { fill: transparent; filter: drop-shadow(0 0 0px #fff); }
+            70%  { fill: #fff; filter: drop-shadow(0 0 40px #fff); }
+            80%  { fill: transparent; filter: drop-shadow(0 0 0px #fff); }
+            100% { fill: #fff; filter: drop-shadow(0 0 15px #fff) drop-shadow(0 0 30px rgba(255,255,255,0.2)); stroke-width: 0; }
+        }
+
+        .ignite-active {
+            animation: bulbIgnition 1s ease-in-out forwards;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="ambient">TYSON</div>
-    <div class="instruction">Click and drag to interact</div>
+    <!-- The background that reveals on ignition -->
+    <div class="cinematic-bg" id="background"></div>
 
-    <!-- DOM Elements to be synced with Physics Bodies -->
-    <div id="logo-block" class="physics-el">
-        <img src="https://raw.githubusercontent.com/TYSONMediaGroup/TYSONMediaGroup/refs/heads/main/imagestuff/TYSONMediaGroupBanner.png" alt="Logo">
+    <div class="brand-container">
+        <!-- SVG used to animate the text outline -->
+        <svg class="svg-logo" viewBox="0 0 800 200">
+            <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" class="svg-text" id="tyson-text">TYSON</text>
+        </svg>
+        
+        <div class="sub-brand" id="sub-text">MEDIA GROUP</div>
     </div>
-    <div id="media-block" class="physics-el">Media</div>
-    <div id="aviation-block" class="physics-el">Aviation</div>
-    <div id="atlantis-block" class="physics-el">Atlantis</div>
 
     <script>
-        // --- 1. Matter.js Setup ---
-        const Engine = Matter.Engine,
-              Render = Matter.Render,
-              Runner = Matter.Runner,
-              Bodies = Matter.Bodies,
-              Composite = Matter.Composite,
-              Mouse = Matter.Mouse,
-              MouseConstraint = Matter.MouseConstraint;
+        document.addEventListener('DOMContentLoaded', () => {
+            const tysonText = document.getElementById('tyson-text');
+            const bg = document.getElementById('background');
+            const subText = document.getElementById('sub-text');
 
-        const engine = Engine.create();
-        const world = engine.world;
-        
-        // Slightly lower gravity for a more cinematic, floaty feel
-        engine.world.gravity.y = 0.6; 
+            // Step 1: Start the drawing sequence
+            tysonText.classList.add('draw-active');
 
-        // --- 2. Screen Boundaries ---
-        let width = window.innerWidth;
-        let height = window.innerHeight;
-        const wallOptions = { isStatic: true, render: { visible: false } };
-        
-        const ground = Bodies.rectangle(width / 2, height + 50, width * 2, 100, wallOptions);
-        const leftWall = Bodies.rectangle(-50, height / 2, 100, height * 2, wallOptions);
-        const rightWall = Bodies.rectangle(width + 50, height / 2, 100, height * 2, wallOptions);
-        const ceiling = Bodies.rectangle(width / 2, -50, width * 2, 100, wallOptions);
-        
-        Composite.add(world, [ground, leftWall, rightWall, ceiling]);
-
-        // --- 3. Create Physics Bodies ---
-        // Physics properties: restitution makes them bouncy, frictionAir gives them drag
-        const physicsProps = { restitution: 0.6, frictionAir: 0.02, friction: 0.1 };
-
-        // Dimensions map to the CSS width/height
-        const logoBody = Bodies.rectangle(width/2, 100, 300, 80, { ...physicsProps, chamfer: { radius: 10 } });
-        const mediaBody = Bodies.rectangle(width/2 - 100, 200, 180, 60, { ...physicsProps, chamfer: { radius: 30 } });
-        const aviationBody = Bodies.rectangle(width/2, 250, 180, 60, { ...physicsProps, chamfer: { radius: 30 } });
-        const atlantisBody = Bodies.rectangle(width/2 + 100, 150, 180, 60, { ...physicsProps, chamfer: { radius: 30 } });
-
-        Composite.add(world, [logoBody, mediaBody, aviationBody, atlantisBody]);
-
-        // Map DOM elements to their respective physics bodies
-        const elementsMap = [
-            { dom: document.getElementById('logo-block'), body: logoBody, w: 300, h: 80 },
-            { dom: document.getElementById('media-block'), body: mediaBody, w: 180, h: 60 },
-            { dom: document.getElementById('aviation-block'), body: aviationBody, w: 180, h: 60 },
-            { dom: document.getElementById('atlantis-block'), body: atlantisBody, w: 180, h: 60 }
-        ];
-
-        // --- 4. Mouse Interaction ---
-        const mouse = Mouse.create(document.body);
-        const mouseConstraint = MouseConstraint.create(engine, {
-            mouse: mouse,
-            constraint: {
-                stiffness: 0.2,
-                render: { visible: false }
-            }
+            // Step 2: Trigger the flash and background reveal after drawing is almost complete
+            setTimeout(() => {
+                tysonText.classList.add('ignite-active');
+                bg.classList.add('ignite');
+                subText.classList.add('ignite');
+            }, 3000); // 3000ms syncs perfectly with the 3.5s draw animation
         });
-        Composite.add(world, mouseConstraint);
-
-        // --- 5. The Sync Loop ---
-        // This function continuously updates the CSS transforms to match the Matter.js coordinates
-        function syncDOM() {
-            elementsMap.forEach(el => {
-                const x = el.body.position.x - (el.w / 2);
-                const y = el.body.position.y - (el.h / 2);
-                const angle = el.body.angle;
-                
-                el.dom.style.transform = `translate(${x}px, ${y}px) rotate(${angle}rad)`;
-            });
-            requestAnimationFrame(syncDOM);
-        }
-
-        // --- 6. Run the Engine ---
-        Runner.run(Runner.create(), engine);
-        syncDOM();
-
-        // --- 7. Handle Window Resize ---
-        window.addEventListener('resize', () => {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            
-            // Move walls to new boundaries
-            Matter.Body.setPosition(ground, { x: width / 2, y: height + 50 });
-            Matter.Body.setPosition(rightWall, { x: width + 50, y: height / 2 });
-            Matter.Body.setPosition(ceiling, { x: width / 2, y: -50 });
-        });
-
     </script>
+
 </body>
 </html>
