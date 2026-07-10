@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TYSON Media Group | Coming Soon</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;700&display=swap" rel="stylesheet">
+    <title>tysonmediagroup.org | Coming Soon</title>
+    <!-- Importing Cormorant Garamond -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         /* Global Reset */
         * {
@@ -16,70 +19,72 @@
         body, html {
             width: 100%;
             height: 100%;
-            background-color: #030305;
-            font-family: 'Montserrat', sans-serif;
-            color: #ffffff;
+            background-color: #0a0a0a; /* Deep charcoal black */
+            font-family: 'Cormorant Garamond', serif;
+            color: #e0e0e0;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* --- Ambient 3D Lighting (Shopify Editions Vibe) --- */
+        /* --- Ambient 3D Cinematic Lighting --- */
         .ambient-light {
             position: absolute;
             border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.5;
+            filter: blur(120px);
+            opacity: 0.35;
             z-index: 0;
-            animation: floatLight 10s infinite alternate ease-in-out;
+            animation: floatLight 12s infinite alternate ease-in-out;
+            pointer-events: none;
         }
 
+        /* Warm cinematic spotlight (Tungsten feel) */
         .light-1 {
-            width: 40vw;
-            height: 40vw;
-            background: linear-gradient(135deg, #1a2a6c, #11998e);
+            width: 45vw;
+            height: 45vw;
+            background: radial-gradient(circle, #3e2e1a, #0a0a0a);
             top: -10%;
             left: -10%;
         }
 
+        /* Cool cinematic fill light (Steel blue feel) */
         .light-2 {
-            width: 30vw;
-            height: 30vw;
-            background: linear-gradient(135deg, #2b5876, #4e4376);
+            width: 35vw;
+            height: 35vw;
+            background: radial-gradient(circle, #1a2430, #0a0a0a);
             bottom: -5%;
             right: -5%;
-            animation-duration: 14s;
+            animation-duration: 16s;
             animation-direction: alternate-reverse;
         }
 
         @keyframes floatLight {
             0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(10vw, 10vh) scale(1.2); }
+            100% { transform: translate(5vw, 5vh) scale(1.1); }
         }
 
         /* --- 3D Scene Wrapper --- */
         .scene {
-            perspective: 1200px; /* Creates the 3D space */
+            perspective: 1400px;
             z-index: 1;
             width: 90%;
-            max-width: 800px;
+            max-width: 850px;
         }
 
-        /* --- Floating Glass Card --- */
+        /* --- Floating Frosted Glass Card --- */
         .glass-card {
             width: 100%;
-            padding: 60px 40px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            backdrop-filter: blur(24px); /* The frosted glass effect */
-            -webkit-backdrop-filter: blur(24px);
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            padding: 80px 50px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px; /* Sharper corners for a classic look */
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
             
-            /* 3D Properties */
             transform-style: preserve-3d;
-            transition: transform 0.1s ease-out; /* Smooth follow for the mouse */
+            transition: transform 0.15s ease-out; 
             
             display: flex;
             flex-direction: column;
@@ -87,78 +92,80 @@
             text-align: center;
         }
 
-        /* Elements inside popping out on the Z-axis */
+        /* Z-Axis Pop Elements */
         .logo-container {
-            transform: translateZ(80px); /* Pops the logo out */
-            margin-bottom: 20px;
+            transform: translateZ(90px);
+            margin-bottom: 25px;
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
         }
 
         .logo-container img {
             width: 100%;
             height: auto;
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 30px 40px rgba(0,0,0,0.6));
         }
 
         h2 {
-            font-size: clamp(1rem, 2vw, 1.5rem);
-            font-weight: 200;
-            letter-spacing: 8px;
-            color: #b0b0b0;
-            margin-bottom: 40px;
-            transform: translateZ(50px); /* Pops text out slightly less */
+            font-size: clamp(1.2rem, 2vw, 1.8rem);
+            font-weight: 300;
+            letter-spacing: 6px;
+            color: #a3a3a3;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            transform: translateZ(60px);
         }
 
         /* Brand Branches */
         .branches {
             display: flex;
-            gap: 20px;
-            font-size: 0.9rem;
+            gap: 25px;
+            font-size: 1.2rem;
             font-weight: 400;
-            letter-spacing: 3px;
+            font-style: italic;
+            letter-spacing: 2px;
             color: #888;
-            transform: translateZ(60px);
-            margin-bottom: 50px;
+            transform: translateZ(70px);
+            margin-bottom: 60px;
         }
 
         .branch {
-            transition: all 0.3s ease;
+            transition: color 0.4s ease;
+            cursor: default;
         }
 
         .branch:hover {
             color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
         .separator {
-            color: #444;
+            color: #333;
             user-select: none;
+            font-style: normal;
         }
 
-        /* Interactive Button */
+        /* Elegant Button */
         .notify-btn {
-            padding: 16px 45px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.05);
+            padding: 16px 50px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: transparent;
             color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.9rem;
-            letter-spacing: 3px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            letter-spacing: 4px;
             text-transform: uppercase;
-            border-radius: 50px;
+            border-radius: 2px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            transform: translateZ(70px); /* Button pops out */
-            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            transform: translateZ(80px);
         }
 
         .notify-btn:hover {
-            background: #ffffff;
-            color: #030305;
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
-            border-color: #ffffff;
-            transform: translateZ(90px) scale(1.05);
+            background: rgba(255, 255, 255, 0.9);
+            color: #0a0a0a;
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.9);
+            transform: translateZ(100px) scale(1.02);
         }
 
         @media (max-width: 600px) {
@@ -170,18 +177,21 @@
                 display: none;
             }
             .glass-card {
-                padding: 40px 20px;
+                padding: 50px 25px;
+            }
+            .logo-container {
+                transform: translateZ(50px);
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Deep Ambient 3D Lights -->
+    <!-- Cinematic Lighting -->
     <div class="ambient-light light-1"></div>
     <div class="ambient-light light-2"></div>
 
-    <!-- 3D Scene & Interative Card -->
+    <!-- 3D Scene -->
     <div class="scene">
         <div class="glass-card" id="tilt-card">
             
@@ -189,17 +199,17 @@
                 <img src="https://raw.githubusercontent.com/TYSONMediaGroup/TYSONMediaGroup/refs/heads/main/imagestuff/TYSONMediaGroupBanner.png" alt="TYSON Media Group Banner">
             </div>
             
-            <h2>INITIATING SEQUENCE</h2>
+            <h2>Coming Soon</h2>
             
             <div class="branches">
-                <span class="branch">MEDIA</span>
-                <span class="separator">•</span>
-                <span class="branch">AVIATION</span>
-                <span class="separator">•</span>
-                <span class="branch">ATLANTIS</span>
+                <span class="branch">Media</span>
+                <span class="separator">|</span>
+                <span class="branch">Aviation</span>
+                <span class="separator">|</span>
+                <span class="branch">Atlantis</span>
             </div>
 
-            <button class="notify-btn" onclick="engage()">ESTABLISH LINK</button>
+            <button class="notify-btn" onclick="notify()">Stay Updated</button>
             
         </div>
     </div>
@@ -209,48 +219,49 @@
         const card = document.getElementById('tilt-card');
         const scene = document.querySelector('.scene');
 
-        // Max rotation in degrees
-        const maxTilt = 15;
+        // Max rotation in degrees (lowered slightly for a more subtle, premium feel)
+        const maxTilt = 10;
 
         scene.addEventListener('mousemove', (e) => {
-            // Get dimensions of the container
             const rect = scene.getBoundingClientRect();
             
-            // Calculate mouse position relative to the center of the card
             const x = e.clientX - rect.left - rect.width / 2;
             const y = e.clientY - rect.top - rect.height / 2;
             
-            // Calculate rotation percentages
             const rotateX = -(y / (rect.height / 2)) * maxTilt;
             const rotateY = (x / (rect.width / 2)) * maxTilt;
 
-            // Apply the 3D transform
             card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         });
 
-        // Snap back to original position when mouse leaves
+        // Snap back to original position
         scene.addEventListener('mouseleave', () => {
-            card.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)'; // Add springy transition back
+            card.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
             
-            // Remove transition so it tracks smoothly when hovered again
             setTimeout(() => {
-                card.style.transition = 'transform 0.1s ease-out';
-            }, 600);
+                card.style.transition = 'transform 0.15s ease-out';
+            }, 800);
         });
 
-        // Simple Button interaction
-        function engage() {
+        // Clean, professional button interaction
+        function notify() {
             const btn = document.querySelector('.notify-btn');
-            btn.innerText = "LINK SECURED";
-            btn.style.background = "#ffffff";
-            btn.style.color = "#030305";
+            const originalText = btn.innerText;
             
-            setTimeout(() => {
-                btn.innerText = "ESTABLISH LINK";
-                btn.style.background = "rgba(255, 255, 255, 0.05)";
-                btn.style.color = "#ffffff";
-            }, 3000);
+            if(originalText === "Stay Updated") {
+                btn.innerText = "Added to List";
+                btn.style.background = "rgba(255, 255, 255, 0.9)";
+                btn.style.color = "#0a0a0a";
+                btn.style.pointerEvents = "none";
+                
+                setTimeout(() => {
+                    btn.innerText = "Stay Updated";
+                    btn.style.background = "transparent";
+                    btn.style.color = "#ffffff";
+                    btn.style.pointerEvents = "auto";
+                }, 4000);
+            }
         }
     </script>
 </body>
