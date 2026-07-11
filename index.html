@@ -20,27 +20,26 @@
             font-family: 'Cormorant Garamond', serif;
         }
 
-        /* 
-          This wrapper controls the final massive zoom.
-          The transform-origin is targeted precisely at the 'o' in "group".
-          If it's slightly off center on your specific screen, adjust the 67.5%.
+        /* THE LENS / ZOOM WRAPPER 
+          transform-origin is zeroed in on the first 'o' in "tyson".
         */
         .zoom-wrapper {
-            position: relative;
-            width: 90vw;
-            max-width: 1200px;
+            position: absolute;
+            width: 100vw;
+            max-width: 1400px;
             display: flex;
             justify-content: center;
-            transform-origin: 67.5% 53%; 
-            will-change: transform, opacity;
-            transition: transform 2.5s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.5s 2s;
+            /* Precisely targets the first 'o' */
+            transform-origin: 30.5% 53%; 
+            will-change: transform;
+            /* The zoom takes 1.8s, accelerating smoothly */
+            transition: transform 1.8s cubic-bezier(0.8, 0, 0.2, 1);
             z-index: 2;
         }
 
-        /* The scale(150) punches the viewport directly through the hole of the 'o' */
+        /* 1000x scale ensures it punches completely through the letter, clearing the screen */
         .zoomed {
-            transform: scale(150);
-            opacity: 0;
+            transform: scale(1000);
         }
 
         .svg-canvas {
@@ -49,58 +48,56 @@
             overflow: visible;
         }
 
-        /* 
-          PHASE 1: THE TRACE
-          Draws the outline strictly from left to right.
+        /* PHASE 1: THE TRACE 
         */
         .text-outline {
-            font-size: 100px;
+            font-size: 110px;
             font-style: italic;
             fill: transparent;
-            stroke: rgba(255, 255, 255, 0.6);
+            stroke: rgba(255, 255, 255, 0.8);
             stroke-width: 0.5px;
-            stroke-dasharray: 2500;
-            stroke-dashoffset: 2500;
-            animation: traceLeftToRight 4.5s linear forwards;
+            /* Perfect math for left-to-right draw */
+            stroke-dasharray: 3000;
+            stroke-dashoffset: 3000;
+            animation: drawTrace 3.5s linear forwards;
         }
 
-        @keyframes traceLeftToRight {
+        @keyframes drawTrace {
             to { stroke-dashoffset: 0; }
         }
 
-        /* 
-          PHASE 2: THE GLOW
-          Starts transparent, then blasts white with heavy outer and inner dropshadows.
+        /* PHASE 2: THE REFLECTIVE SHINE
+          Uses the SVG gradient (defined below) to sweep light across the text
         */
         .text-fill {
-            font-size: 100px;
+            font-size: 110px;
             font-style: italic;
-            fill: #ffffff;
+            fill: url(#shine-gradient);
             opacity: 0;
-            /* Using drop-shadows to create that shiny, reflective projection */
-            filter: drop-shadow(0 0 40px rgba(255,255,255,0.8)) 
-                    drop-shadow(0 0 80px rgba(255,255,255,0.6));
+            /* The projective volumetric glow */
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)) 
+                    drop-shadow(0 0 60px rgba(255,255,255,0.4));
         }
 
         .glow-active {
-            animation: explosiveGlow 2s ease-out forwards;
+            opacity: 1;
+            /* Flashes bright, then settles slightly */
+            animation: pulseGlow 1s ease-out forwards;
         }
 
-        @keyframes explosiveGlow {
-            0% { opacity: 0; filter: drop-shadow(0 0 0px #fff); }
-            20% { opacity: 1; filter: drop-shadow(0 0 50px #fff) drop-shadow(0 0 100px #fff); }
-            100% { opacity: 1; filter: drop-shadow(0 0 15px rgba(255,255,255,0.4)); stroke-width: 0; }
+        @keyframes pulseGlow {
+            0% { filter: drop-shadow(0 0 0px #fff); }
+            50% { filter: drop-shadow(0 0 40px #fff) drop-shadow(0 0 100px #fff); }
+            100% { filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)) drop-shadow(0 0 50px rgba(255,255,255,0.3)); }
         }
 
-        /* 
-          PHASE 3: COMING SOON
-          Sits behind the zoom, fades in after the lens pushes through the text.
+        /* PHASE 3: COMING SOON 
         */
         .coming-soon {
             position: absolute;
             font-style: italic;
-            font-size: 3rem;
-            letter-spacing: 5px;
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            letter-spacing: 4px;
             color: #fff;
             opacity: 0;
             z-index: 1;
@@ -116,44 +113,54 @@
 </head>
 <body>
 
-    <div class="coming-soon" id="coming-soon">Coming Soon</div>
+    <div class="coming-soon" id="coming-soon">tysonmediagroup.org | Coming later this summer...</div>
 
     <div class="zoom-wrapper" id="zoom-container">
         <svg class="svg-canvas" viewBox="0 0 1000 200">
-            <!-- Outline layer -->
+            <defs>
+                <linearGradient id="shine-gradient" x1="-100%" y1="0%" x2="0%" y2="0%">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0.7)" />
+                    <stop offset="50%" stop-color="#ffffff" />
+                    <stop offset="100%" stop-color="rgba(255,255,255,0.7)" />
+                    
+                    <animate attributeName="x1" from="-100%" to="200%" dur="1.5s" begin="3.5s" fill="freeze" />
+                    <animate attributeName="x2" from="0%" to="300%" dur="1.5s" begin="3.5s" fill="freeze" />
+                </linearGradient>
+            </defs>
+
             <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="text-outline">tysonmediagroup.org</text>
-            <!-- Fill & Glow layer -->
+            
             <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="text-fill" id="glow-text">tysonmediagroup.org</text>
         </svg>
     </div>
 
     <script>
-        // Timing variables
-        const TRACE_DURATION = 4500; // 4.5 seconds for the outline
-        const GLOW_HOLD = 1500;      // Hold the glow for 1.5 seconds before zooming
-        const ZOOM_DURATION = 2500;  // 2.5 seconds to zoom through the 'o'
+        // Tightened Timeline (in milliseconds)
+        const TRACE_TIME = 3500; // 3.5s draw
+        const GLOW_HOLD = 1000;  // Shine sweeps for 1s
+        const ZOOM_TIME = 1800;  // 1.8s violent punch-in
 
         window.onload = () => {
             const glowText = document.getElementById('glow-text');
             const zoomContainer = document.getElementById('zoom-container');
             const comingSoon = document.getElementById('coming-soon');
 
-            // 1. Trigger the fill and glow right as the trace finishes
+            // 1. Trigger Glow & Sweep immediately when Trace finishes
             setTimeout(() => {
                 glowText.classList.add('glow-active');
-            }, TRACE_DURATION);
+            }, TRACE_TIME);
 
-            // 2. Trigger the massive scale/zoom into the "o"
+            // 2. Punch the camera through the 'o'
             setTimeout(() => {
                 zoomContainer.classList.add('zoomed');
-            }, TRACE_DURATION + GLOW_HOLD);
+            }, TRACE_TIME + GLOW_HOLD);
 
-            // 3. Fade in "Coming Soon" right as the zoom clears the screen
+            // 3. Fade in final text once camera clears the threshold
             setTimeout(() => {
-                // Remove the zoom container from flow so it doesn't block the new text
-                setTimeout(() => zoomContainer.style.display = 'none', 1000); 
+                // Kill the SVG so it doesn't lag the browser while hidden
+                zoomContainer.style.display = 'none'; 
                 comingSoon.classList.add('fade-in');
-            }, TRACE_DURATION + GLOW_HOLD + (ZOOM_DURATION / 1.5)); // Triggers slightly before zoom finishes for a smooth crossfade
+            }, TRACE_TIME + GLOW_HOLD + ZOOM_TIME);
         };
     </script>
 
