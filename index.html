@@ -20,26 +20,21 @@
             font-family: 'Cormorant Garamond', serif;
         }
 
-        /* THE LENS / ZOOM WRAPPER 
-          transform-origin is zeroed in on the first 'o' in "tyson".
-        */
+        /* THE LENS / ZOOM WRAPPER */
         .zoom-wrapper {
             position: absolute;
             width: 100vw;
             max-width: 1400px;
             display: flex;
             justify-content: center;
-            /* Precisely targets the first 'o' */
-            transform-origin: 30.5% 53%; 
-            will-change: transform;
-            /* The zoom takes 1.8s, accelerating smoothly */
-            transition: transform 1.8s cubic-bezier(0.8, 0, 0.2, 1);
+            transform-origin: 30.5% 53%; /* Targets the first 'o' */
+            will-change: transform, opacity;
+            transition: transform 1.6s cubic-bezier(0.8, 0, 0.2, 1), opacity 0.5s ease;
             z-index: 2;
         }
 
-        /* 1000x scale ensures it punches completely through the letter, clearing the screen */
         .zoomed {
-            transform: scale(1000);
+            transform: scale(800); /* Scaled down slightly to be safer, still easily clears the screen */
         }
 
         .svg-canvas {
@@ -48,15 +43,13 @@
             overflow: visible;
         }
 
-        /* PHASE 1: THE TRACE 
-        */
+        /* PHASE 1: THE TRACE */
         .text-outline {
             font-size: 110px;
             font-style: italic;
             fill: transparent;
             stroke: rgba(255, 255, 255, 0.8);
             stroke-width: 0.5px;
-            /* Perfect math for left-to-right draw */
             stroke-dasharray: 3000;
             stroke-dashoffset: 3000;
             animation: drawTrace 3.5s linear forwards;
@@ -66,22 +59,18 @@
             to { stroke-dashoffset: 0; }
         }
 
-        /* PHASE 2: THE REFLECTIVE SHINE
-          Uses the SVG gradient (defined below) to sweep light across the text
-        */
+        /* PHASE 2: THE REFLECTIVE SHINE */
         .text-fill {
             font-size: 110px;
             font-style: italic;
             fill: url(#shine-gradient);
             opacity: 0;
-            /* The projective volumetric glow */
             filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)) 
                     drop-shadow(0 0 60px rgba(255,255,255,0.4));
         }
 
         .glow-active {
             opacity: 1;
-            /* Flashes bright, then settles slightly */
             animation: pulseGlow 1s ease-out forwards;
         }
 
@@ -91,8 +80,12 @@
             100% { filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)) drop-shadow(0 0 50px rgba(255,255,255,0.3)); }
         }
 
-        /* PHASE 3: COMING SOON 
-        */
+        /* THE GPU SAVER: Strips the heavy blur right before scaling */
+        .strip-filters {
+            filter: none !important;
+        }
+
+        /* PHASE 3: COMING SOON */
         .coming-soon {
             position: absolute;
             font-style: italic;
@@ -100,7 +93,7 @@
             letter-spacing: 4px;
             color: #fff;
             opacity: 0;
-            z-index: 1;
+            z-index: 10; /* Increased to ensure it sits on top of everything */
             transition: opacity 2s ease;
             text-align: center;
         }
@@ -122,43 +115,39 @@
                     <stop offset="0%" stop-color="rgba(255,255,255,0.7)" />
                     <stop offset="50%" stop-color="#ffffff" />
                     <stop offset="100%" stop-color="rgba(255,255,255,0.7)" />
-                    
                     <animate attributeName="x1" from="-100%" to="200%" dur="1.5s" begin="3.5s" fill="freeze" />
                     <animate attributeName="x2" from="0%" to="300%" dur="1.5s" begin="3.5s" fill="freeze" />
                 </linearGradient>
             </defs>
-
             <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="text-outline">tysonmediagroup.org</text>
-            
             <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="text-fill" id="glow-text">tysonmediagroup.org</text>
         </svg>
     </div>
 
     <script>
-        // Tightened Timeline (in milliseconds)
-        const TRACE_TIME = 3500; // 3.5s draw
-        const GLOW_HOLD = 1000;  // Shine sweeps for 1s
-        const ZOOM_TIME = 1800;  // 1.8s violent punch-in
+        const TRACE_TIME = 3500;
+        const GLOW_HOLD = 1000;
+        const ZOOM_TIME = 1600;
 
         window.onload = () => {
             const glowText = document.getElementById('glow-text');
             const zoomContainer = document.getElementById('zoom-container');
             const comingSoon = document.getElementById('coming-soon');
 
-            // 1. Trigger Glow & Sweep immediately when Trace finishes
+            // 1. Trigger Glow & Sweep
             setTimeout(() => {
                 glowText.classList.add('glow-active');
             }, TRACE_TIME);
 
             // 2. Punch the camera through the 'o'
             setTimeout(() => {
+                glowText.classList.add('strip-filters'); // Drops the heavy shadow to prevent GPU crash
                 zoomContainer.classList.add('zoomed');
             }, TRACE_TIME + GLOW_HOLD);
 
-            // 3. Fade in final text once camera clears the threshold
+            // 3. Fade in final text once camera clears
             setTimeout(() => {
-                // Kill the SVG so it doesn't lag the browser while hidden
-                zoomContainer.style.display = 'none'; 
+                zoomContainer.style.opacity = '0'; // Soft fade out instead of an instant rendering kill
                 comingSoon.classList.add('fade-in');
             }, TRACE_TIME + GLOW_HOLD + ZOOM_TIME);
         };
