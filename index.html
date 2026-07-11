@@ -4,6 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tysonmediagroup.org</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #000; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+
+        .brand-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 8rem;
+            color: #fff;
+            transition: all 2s ease-in-out;
+            transform-origin: 55% 50%; /* Center the zoom on the 'o' */
+        }
+
+        /* The Mask Trace */
+        .mask {
+            -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 0%, transparent 0%);
+            -webkit-mask-size: 200% 100%;
+            -webkit-mask-position: 100% 0%;
+            transition: -webkit-mask-position 6s linear;
+        }
+
+        .traced { -webkit-mask-position: 0% 0%; }
+
+        /* Zoom and Fade states */
+        .zoomed { transform: scale(15); opacity: 0; }
+        
+        .sub-message {
+            position: absolute;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 2.5rem;
+            color: #fff;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .fade-in { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="brand-text mask" id="brand">tysonmediagroup.org</div>
+    <div class="sub-message" id="sub">tysonmediagroup.org | Coming later this summer...</div>
+
+    <script>
+        const brand = document.getElementById('brand');
+        const sub = document.getElementById('sub');
+
+        window.onload = () => {
+            // 1. Trace reveals the text
+            brand.classList.add('traced');
+
+            // 2. After trace (6s), zoom into the 'o'
+            setTimeout(() => {
+                brand.classList.add('zoomed');
+            }, 7000);
+
+            // 3. After zoom finishes, fade in the sub-message
+            setTimeout(() => {
+                brand.style.display = 'none';
+                sub.classList.add('fade-in');
+            }, 9000);
+        };
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tysonmediagroup.org</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300&display=swap" rel="stylesheet">
     
     <style>
