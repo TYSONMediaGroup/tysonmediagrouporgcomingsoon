@@ -3,96 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TYSON</title>
+    <title>tysonmediagroup.org</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300&display=swap" rel="stylesheet">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #000; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
 
-        body, html {
-            width: 100%;
-            height: 100vh;
-            background-color: #05010a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
+        .svg-container { width: 90%; max-width: 1000px; }
 
-        .svg-container {
-            width: 100vw;
-            height: 300px;
-        }
-
-        /* Shared font styles for both SVG text elements */
-        .svg-text {
+        .text-path {
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
-            font-weight: 600;
-            font-size: 6.5rem;
-        }
-
-        /* --- STAGE 1: THE TRACE EFFECT --- */
-        .trace-text {
+            font-size: 110px;
             fill: transparent;
-            stroke: rgba(255, 255, 255, 0.9);
-            stroke-width: 1.5px;
-            stroke-dasharray: 1200;
-            stroke-dashoffset: 1200;
-            animation: traceLine 6s ease-in-out infinite;
+            stroke: #fff;
+            stroke-width: 0.8px;
+            /* Slower trace: Dasharray covers length of text */
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            animation: draw 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        /* --- STAGE 2: THE GLOWING CROSS-FADE --- */
-        .glow-text {
-            fill: #ffffff;
-            opacity: 0;
-            
-            /* CSS text-shadow works beautifully on SVG text in modern browsers */
-            text-shadow: 
-                0 0 10px #ffffff,
-                0 0 20px #e2b4ff,
-                0 0 40px #a855f7,
-                0 0 80px #a855f7,
-                0 0 120px #7e22ce;
-                
-            transform-origin: center;
-            animation: glowBlast 6s ease-in-out infinite;
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
         }
 
-        @keyframes traceLine {
-            0% { stroke-dashoffset: 1200; opacity: 0; }
-            10% { opacity: 1; }
-            45% { stroke-dashoffset: 0; opacity: 1; stroke: rgba(255, 255, 255, 0.9); }
-            55% { opacity: 0; }
-            100% { stroke-dashoffset: 0; opacity: 0; }
+        /* The Powerful to Subtle Glow Transition */
+        .text-path.glow {
+            animation: draw 5s linear forwards, shine 6s ease-out 5s forwards;
         }
 
-        @keyframes glowBlast {
-            0%, 35% { opacity: 0; filter: blur(10px) brightness(0.5); transform: scale(0.98); }
-            48% { opacity: 1; filter: blur(2px) brightness(1.5); transform: scale(1.02); }
-            55%, 80% { opacity: 1; filter: blur(0px) brightness(1); transform: scale(1); }
-            100% { opacity: 0; filter: blur(20px) brightness(0); transform: scale(1.05); }
-        }
-
-        @media (max-width: 900px) {
-            .svg-text { font-size: 3.5rem; }
+        @keyframes shine {
+            0% { 
+                fill: #fff; 
+                stroke-width: 0px;
+                filter: drop-shadow(0 0 80px rgba(255,255,255,0.9)); /* Powerful Reflective Start */
+            }
+            100% { 
+                fill: #fff; 
+                filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); /* Suttle End */
+            }
         }
     </style>
 </head>
 <body>
 
-    <svg class="svg-container" viewBox="0 0 1200 300">
-        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="svg-text glow-text">tysonmediagroup.org</text>
-        
-        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="svg-text trace-text">tysonmediagroup.org</text>
-    </svg>
+    <div class="svg-container">
+        <svg viewBox="0 0 1000 200">
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="text-path" id="logo">tysonmediagroup.org</text>
+        </svg>
+    </div>
 
+    <script>
+        const logo = document.getElementById('logo');
+        // Trigger the shine animation after the trace finishes
+        setTimeout(() => {
+            logo.classList.add('glow');
+        }, 5000);
+    </script>
 </body>
 </html>
