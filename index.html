@@ -20,6 +20,235 @@
             font-family: 'Cormorant Garamond', serif;
         }
 
+        .svg-canvas {
+            width: 90vw;
+            max-width: 1400px;
+            height: auto;
+            overflow: visible;
+            z-index: 2;
+        }
+
+        /* PHASE 1: THE SLOWER TRACE */
+        .text-outline {
+            font-size: 110px;
+            font-style: italic;
+            fill: transparent;
+            stroke: rgba(255, 255, 255, 0.8);
+            stroke-width: 0.5px;
+            stroke-dasharray: 3000;
+            stroke-dashoffset: 3000;
+        }
+
+        .trace-active {
+            /* Lengthened to 6 seconds for a deliberate draw */
+            animation: drawTrace 6s linear forwards;
+        }
+
+        @keyframes drawTrace {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* PHASE 2: THE REFLECTIVE SHINE */
+        .text-fill {
+            font-size: 110px;
+            font-style: italic;
+            fill: url(#shine-gradient);
+            opacity: 0;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)) 
+                    drop-shadow(0 0 60px rgba(255,255,255,0.4));
+        }
+
+        .glow-active {
+            opacity: 1;
+            /* Shorter, punchier animation so the zoom can start immediately */
+            animation: pulseGlow 0.8s ease-out forwards;
+        }
+
+        @keyframes pulseGlow {
+            0% { filter: drop-shadow(0 0 0px #fff); }
+            40% { filter: drop-shadow(0 0 50px #fff) drop-shadow(0 0 120px #fff); }
+            100% { filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)) drop-shadow(0 0 50px rgba(255,255,255,0.3)); }
+        }
+
+        /* PHASE 3: FINAL SCREEN (TEXT & ICON) */
+        .final-screen {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            opacity: 0;
+            z-index: 10;
+            /* Faster fade-in to overlap the zoom perfectly */
+            transition: opacity 1.5s ease;
+        }
+
+        .final-screen.fade-in {
+            opacity: 1;
+        }
+
+        .coming-soon-text {
+            font-style: italic;
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            letter-spacing: 4px;
+            text-align: center;
+        }
+
+        .yt-link {
+            color: #fff;
+            opacity: 0.6;
+            transition: opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .yt-link:hover {
+            opacity: 1;
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.5));
+        }
+
+        .yt-link svg {
+            width: 40px;
+            height: 40px;
+            fill: currentColor;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="final-screen" id="final-screen">
+        <div class="coming-soon-text">tysonmediagroup.org | Coming later this summer...</div>
+        
+        <a href="https://youtube.com/@tysonmediagroup" target="_blank" class="yt-link" aria-label="Visit TYSON Media Group on YouTube">
+            <svg viewBox="0 0 24 24">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Original ViewBox set for standard viewing -->
+    <svg class="svg-canvas" id="zoom-container" viewBox="0 0 1000 200">
+        <defs>
+            <linearGradient id="shine-gradient" x1="-100%" y1="0%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.7)" />
+                <stop offset="50%" stop-color="#ffffff" />
+                <stop offset="100%" stop-color="rgba(255,255,255,0.7)" />
+                <animate id="shine-anim-1" attributeName="x1" from="-100%" to="200%" dur="1s" begin="indefinite" fill="freeze" />
+                <animate id="shine-anim-2" attributeName="x2" from="0%" to="300%" dur="1s" begin="indefinite" fill="freeze" />
+            </linearGradient>
+        </defs>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="text-outline" id="outline-text">tysonmediagroup.org</text>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="text-fill" id="glow-text">tysonmediagroup.org</text>
+    </svg>
+
+    <script>
+        // TIGHTENED TIMELINE (Milliseconds)
+        const PRE_ROLL = 1000;     // 1s delay to let browser settle
+        const TRACE_TIME = 6000;   // Slower 6s trace
+        const GLOW_START = 5800;   // Triggers right BEFORE the trace ends
+        const ZOOM_START = 6300;   // Triggers exactly as the glow hits its peak brightness
+        const FADE_START = 6700;   // Starts fading in final screen mid-zoom
+
+        // THE PURE VECTOR ZOOM ENGINE
+        function triggerVectorZoom() {
+            const svg = document.getElementById('zoom-container');
+            const glowText = document.getElementById('glow-text');
+            const outlineText = document.getElementById('outline-text');
+
+            // Strip CSS filters to prevent lag and guarantee crisp vectors
+            glowText.style.filter = 'none';
+            outlineText.style.display = 'none'; 
+
+            const startTime = performance.now();
+            const duration = 1600; // 1.6s violent punch-in
+
+            // Starting coordinates (full canvas)
+            const sX = 0, sY = 0, sW = 1000, sH = 200;
+            
+            // Ending coordinates (Mathmatically targeted on the first 'o')
+            const eW = 2, eH = 0.4; // Massively tiny viewbox guarantees clearing the screen
+            const eX = 305 - (eW/2), eY = 106 - (eH/2); 
+
+            function updateViewBox(currentTime) {
+                let progress = (currentTime - startTime) / duration;
+                if (progress > 1) progress = 1;
+
+                // Exponential acceleration for the "camera lens" effect
+                let ease = progress === 0 ? 0 : Math.pow(2, 10 * progress - 10);
+
+                let cX = sX + (eX - sX) * ease;
+                let cY = sY + (eY - sY) * ease;
+                let cW = sW + (eW - sW) * ease;
+                let cH = sH + (eH - sH) * ease;
+
+                svg.setAttribute('viewBox', `${cX} ${cY} ${cW} ${cH}`);
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateViewBox);
+                } else {
+                    svg.style.display = 'none'; // Kill SVG entirely once out of bounds
+                }
+            }
+            requestAnimationFrame(updateViewBox);
+        }
+
+        // SEQUENCE CONTROLLER
+        window.onload = () => {
+            const outlineText = document.getElementById('outline-text');
+            const glowText = document.getElementById('glow-text');
+            const finalScreen = document.getElementById('final-screen');
+            const shineAnim1 = document.getElementById('shine-anim-1');
+            const shineAnim2 = document.getElementById('shine-anim-2');
+
+            setTimeout(() => {
+                
+                // 1. Start Slower Trace
+                outlineText.classList.add('trace-active');
+
+                // 2. Reflective Glow (Triggered early to eliminate dead space)
+                setTimeout(() => {
+                    glowText.classList.add('glow-active');
+                    shineAnim1.beginElement();
+                    shineAnim2.beginElement();
+                }, GLOW_START);
+
+                // 3. Initiate Vector Zoom (Triggered at peak brightness)
+                setTimeout(() => {
+                    triggerVectorZoom();
+                }, ZOOM_START);
+
+                // 4. Fade In Final Screen (Triggered mid-zoom)
+                setTimeout(() => {
+                    finalScreen.classList.add('fade-in');
+                }, FADE_START);
+
+            }, PRE_ROLL);
+        };
+    </script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon | tysonmediagroup.org</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background-color: #000; 
+            color: #fff;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            overflow: hidden; 
+            font-family: 'Cormorant Garamond', serif;
+        }
+
         /* SVG CANVAS */
         .svg-canvas {
             width: 90vw;
