@@ -20,20 +20,17 @@
             font-family: 'Cormorant Garamond', serif;
         }
 
-        /* SVG CANVAS NOW HANDLES THE ZOOM
-           Scaling the SVG directly forces vector recalculation (keeps it crisp)
-        */
+        /* SVG CANVAS */
         .svg-canvas {
             width: 90vw;
             max-width: 1400px;
             height: auto;
             overflow: visible;
-            transform-origin: 30.5% 53%; /* Targets the first 'o' */
-            transition: transform 1.8s cubic-bezier(0.8, 0, 0.2, 1), opacity 0.5s ease;
+            transform-origin: 30.5% 53%; 
+            transition: transform 1.8s cubic-bezier(0.8, 0, 0.2, 1), opacity 0.8s ease;
             z-index: 2;
         }
 
-        /* Scaled to 300x to clear the screen while avoiding browser render limits */
         .zoomed {
             transform: scale(300);
         }
@@ -50,7 +47,8 @@
         }
 
         .trace-active {
-            animation: drawTrace 3.5s linear forwards;
+            /* Slower trace: 4.8 seconds */
+            animation: drawTrace 4.8s linear forwards;
         }
 
         @keyframes drawTrace {
@@ -78,33 +76,65 @@
             100% { filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)) drop-shadow(0 0 50px rgba(255,255,255,0.3)); }
         }
 
-        /* THE GPU SAVER */
         .strip-filters {
             filter: none !important;
         }
 
-        /* PHASE 3: COMING SOON */
-        .coming-soon {
+        /* PHASE 3: FINAL SCREEN (TEXT & ICON) */
+        .final-screen {
             position: absolute;
-            font-style: italic;
-            font-size: clamp(1.5rem, 4vw, 3rem);
-            letter-spacing: 4px;
-            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
             opacity: 0;
             z-index: 10;
             transition: opacity 2s ease;
+        }
+
+        .final-screen.fade-in {
+            opacity: 1;
+        }
+
+        .coming-soon-text {
+            font-style: italic;
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            letter-spacing: 4px;
             text-align: center;
         }
 
-        .fade-in {
+        /* Premium YouTube Icon Styling */
+        .yt-link {
+            color: #fff;
+            opacity: 0.6;
+            transition: opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .yt-link:hover {
             opacity: 1;
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.5));
+        }
+
+        .yt-link svg {
+            width: 40px;
+            height: 40px;
+            fill: currentColor;
         }
 
     </style>
 </head>
 <body>
 
-    <div class="coming-soon" id="coming-soon">tysonmediagroup.org | Coming later this summer...</div>
+    <div class="final-screen" id="final-screen">
+        <div class="coming-soon-text">tysonmediagroup.org | Coming later this summer...</div>
+        
+        <a href="https://youtube.com/@tysonmediagroup" target="_blank" class="yt-link" aria-label="Visit TYSON Media Group on YouTube">
+            <svg viewBox="0 0 24 24">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+        </a>
+    </div>
 
     <svg class="svg-canvas" id="zoom-container" viewBox="0 0 1000 200">
         <defs>
@@ -121,22 +151,20 @@
     </svg>
 
     <script>
-        // Timing Configuration (in milliseconds)
-        const PRE_ROLL_DELAY = 1500; // 1.5s delay for mobile browser fade-ins
-        const TRACE_TIME = 3500;
+        // Updated Timeline
+        const PRE_ROLL_DELAY = 1500; 
+        const TRACE_TIME = 4800; // Slower, more deliberate draw
         const GLOW_HOLD = 1000;
-        const ZOOM_TIME = 1800;
-
+        
         window.onload = () => {
             const outlineText = document.getElementById('outline-text');
             const glowText = document.getElementById('glow-text');
             const zoomContainer = document.getElementById('zoom-container');
-            const comingSoon = document.getElementById('coming-soon');
+            const finalScreen = document.getElementById('final-screen');
             
             const shineAnim1 = document.getElementById('shine-anim-1');
             const shineAnim2 = document.getElementById('shine-anim-2');
 
-            // Wait for the browser to settle, then start the sequence
             setTimeout(() => {
                 
                 // 1. Start Trace
@@ -155,13 +183,15 @@
                     zoomContainer.classList.add('zoomed');
                 }, TRACE_TIME + GLOW_HOLD);
 
-                // 4. Fade in final text once camera clears
+                // 4. Fade in final text sooner (overlapping with the zoom)
+                // Triggered just 600ms after the zoom starts instead of waiting for it to finish
                 setTimeout(() => {
-                    zoomContainer.style.opacity = '0'; 
-                    comingSoon.classList.add('fade-in');
-                }, TRACE_TIME + GLOW_HOLD + ZOOM_TIME);
+                    zoomContainer.style.opacity = '0';
+                    zoomContainer.style.pointerEvents = 'none'; // Prevents invisible SVG from blocking the button click
+                    finalScreen.classList.add('fade-in');
+                }, TRACE_TIME + GLOW_HOLD + 600);
 
-            }, PRE_ROLL_DELAY); // Master delay applied here
+            }, PRE_ROLL_DELAY);
         };
     </script>
 
